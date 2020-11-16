@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.30711.63
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smallifier For Windows", "Smallifier For Windows\Smallifier For Windows.csproj", "{A22FE4E1-97AF-4DFA-BE29-E662DA975F46}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B7BBAF91-3E6F-4E91-97BB-EE8AEE06383F}"
+	ProjectSection(SolutionItems) = preProject
+		demo\smallify-demo.png = demo\smallify-demo.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
