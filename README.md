@@ -4,4 +4,4 @@ This is a hacked-together app that uses FFmpeg to reduce the size of video clips
 
 It was built on top of [Xabe.FFmpeg](https://github.com/tomaszzmuda/Xabe.FFmpeg), in Visual Studio 2019 using .NET 4.7.2, and expects Windows Media Player to be installed on the runtime system.
 
-!(https://github.com/breadlam/Smallifier-For-Windows/blob/master/demo/smallify-demo.png?raw=true)
+![](https://github.com/breadlam/Smallifier-For-Windows/blob/master/demo/smallify-demo.png?raw=true)
