@@ -32,32 +32,32 @@ namespace Smallifier_For_Windows
             comboBoxResolutions.ValueMember = "Value";
             comboBoxResolutions.DataSource = new BindingSource(vidSizeDict, null);
             comboBoxResolutions.SelectedIndex = 54;
-            checkFFmpeg();
+            CheckFFmpeg();
         }
 
-        private async void checkFFmpeg()
+        private async void CheckFFmpeg()
         {
             if (!File.Exists("ffmpeg.exe") || !File.Exists("ffprobe.exe"))
             {
                 buttonOpenFile.Enabled = false;
-                logToConsole("FFmpeg doesn't exist.");
-                logToConsole("Downloading FFmpeg...");
+                LogToConsole("FFmpeg doesn't exist.");
+                LogToConsole("Downloading FFmpeg...");
                 await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official);
-                logToConsole("FFmpeg downloaded.");
+                LogToConsole("FFmpeg downloaded.");
                 buttonOpenFile.Enabled = true;
             }
         }
 
-        private void logToConsole(string textline)
+        private void LogToConsole(string textline)
         {
             textBoxStatusLog.AppendText(textline + "\r\n");
         }
 
-        private async Task loadVideoFile(string videoFilename)
+        private async Task LoadVideoFile(string videoFilename)
         {
             origFilename = videoFilename;
             labelFilename.Text = videoFilename;
-            logToConsole("Playing back video file.");
+            LogToConsole("Playing back video file.");
             axWindowsMediaPlayer1.URL = videoFilename;
             buttonSmallify.Enabled = true;
             buttonSaveFile.Enabled = false;
@@ -75,16 +75,16 @@ namespace Smallifier_For_Windows
             //textBoxOrigDuration.Text = axWindowsMediaPlayer1.currentMedia.duration.ToString();
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        private async void Button1_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                logToConsole("Opened video file.");
-                await loadVideoFile(openFileDialog1.FileName);
+                LogToConsole("Opened video file.");
+                await LoadVideoFile(openFileDialog1.FileName);
             }
         }
 
-        private void form1_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
+        private void Form1_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 e.Effect = DragDropEffects.All;
@@ -92,12 +92,12 @@ namespace Smallifier_For_Windows
                 e.Effect = DragDropEffects.None;
         }
 
-        private async void form1_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
+        private async void Form1_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
-            await loadVideoFile(((string[])e.Data.GetData(DataFormats.FileDrop, false))[0]);
+            await LoadVideoFile(((string[])e.Data.GetData(DataFormats.FileDrop, false))[0]);
         }
 
-        private async Task<int> conversionTask(IProgress<int> progress)
+        private async Task<int> ConversionTask(IProgress<int> progress)
         {
             string tmp = Path.GetTempFileName();
             tempFilename = Path.ChangeExtension(tmp, ".mp4");
@@ -119,7 +119,7 @@ namespace Smallifier_For_Windows
                 case 53:
                     newSize = videoStream.Width.ToString() + "x" + videoStream.Height.ToString();
                     conversion.AddParameter("-s " + newSize);
-                    logToConsole("Encode resolution: " + newSize);
+                    LogToConsole("Encode resolution: " + newSize);
                     textBoxTargetWidth.Text = textBoxOrigHorizontal.Text;
                     textBoxTargetHeight.Text = textBoxOrigVertical.Text;
                     break;
@@ -128,7 +128,7 @@ namespace Smallifier_For_Windows
                     newHeight = decimal.Round((videoStream.Height / 2), 0, MidpointRounding.ToEven);
                     newSize = newWidth.ToString() + "x" + newHeight.ToString();
                     conversion.AddParameter("-s " + newSize);
-                    logToConsole("Encode resolution: " + newSize);
+                    LogToConsole("Encode resolution: " + newSize);
                     textBoxTargetWidth.Text = newWidth.ToString();
                     textBoxTargetHeight.Text = newHeight.ToString();
                     break;
@@ -137,13 +137,13 @@ namespace Smallifier_For_Windows
                     newHeight = decimal.Round((videoStream.Height / 4), 0, MidpointRounding.ToEven);
                     newSize = newWidth.ToString() + "x" + newHeight.ToString();
                     conversion.AddParameter("-s " + newSize);
-                    logToConsole("Encode resolution: " + newSize);
+                    LogToConsole("Encode resolution: " + newSize);
                     textBoxTargetWidth.Text = newWidth.ToString();
                     textBoxTargetHeight.Text = newHeight.ToString();
                     break;
                 default:
                     videoStream.SetSize((VideoSize)comboBoxResolutions.SelectedIndex);
-                    logToConsole("Encode resolution: " + ((VideoSize)comboBoxResolutions.SelectedIndex).ToString());
+                    LogToConsole("Encode resolution: " + ((VideoSize)comboBoxResolutions.SelectedIndex).ToString());
                     break;
             }
 
@@ -152,7 +152,7 @@ namespace Smallifier_For_Windows
             conversion.AddParameter("-bufsize 8028k");
             //conversion.AddParameter("-maxrate " + bitrateKBsec + "k");
             textBoxTargetBitrate.Text = bitrateKBsec;
-            logToConsole("Encode bitrate: " + bitrateKBsec + " KB/s");
+            LogToConsole("Encode bitrate: " + bitrateKBsec + " KB/s");
 
             conversion.AddStream(videoStream);
             conversion.SetOutput(tempFilename).SetOverwriteOutput(true);
@@ -161,12 +161,12 @@ namespace Smallifier_For_Windows
             {
                 progress.Report(args.Percent);
             };
-            logToConsole("Re-encoding video file...");
+            LogToConsole("Re-encoding video file...");
             await conversion.Start();
             return 100;
         }
 
-        private async void buttonSmallify_Click(object sender, EventArgs e)
+        private async void ButtonSmallify_Click(object sender, EventArgs e)
         {
             buttonSmallify.Enabled = false;
             buttonOpenFile.Enabled = false;
@@ -178,9 +178,9 @@ namespace Smallifier_For_Windows
             textBoxNewVertical.Clear();
             textBoxNewRatio.Clear();
 
-            int uploads = await conversionTask(new Progress<int>(percent => progressBar1.Value = percent));
+            int uploads = await ConversionTask(new Progress<int>(percent => progressBar1.Value = percent));
             progressBar1.Value = 0;
-            logToConsole("Encode complete.");
+            LogToConsole("Encode complete.");
             labelFilename.Text = tempFilename;
             buttonSaveFile.Enabled = true;
             buttonOpenFile.Enabled = true;
@@ -195,12 +195,12 @@ namespace Smallifier_For_Windows
             textBoxNewHorizontal.Text = newVideoStream.Width.ToString();
             textBoxNewVertical.Text = newVideoStream.Height.ToString();
             textBoxNewRatio.Text = newVideoStream.Ratio;
-            logToConsole("Size reduced by " + Math.Round(((1.0 - ((double)newMediaInfo.Size / (double)mediaInfoOriginal.Size)) * 100.0), 2).ToString() + "%");
-            logToConsole("Starting playback.");
+            LogToConsole("Size reduced by " + Math.Round(((1.0 - ((double)newMediaInfo.Size / (double)mediaInfoOriginal.Size)) * 100.0), 2).ToString() + "%");
+            LogToConsole("Starting playback.");
             axWindowsMediaPlayer1.URL = tempFilename;
         }
 
-        private void buttonSave_Click(object sender, EventArgs e)
+        private void ButtonSave_Click(object sender, EventArgs e)
         {
             string newFile = Path.ChangeExtension(origFilename, ".mp4");
             saveFileDialog1.FileName = "smallified-" + Path.GetFileName(newFile);
@@ -224,7 +224,7 @@ namespace Smallifier_For_Windows
         //    }
         //}
 
-        private void textBox1_VisibleChanged(object sender, EventArgs e)
+        private void TextBox1_VisibleChanged(object sender, EventArgs e)
         {
             if (textBoxStatusLog.Visible)
             {
@@ -233,7 +233,7 @@ namespace Smallifier_For_Windows
             }
         }
 
-        private void labelFilename_MouseDown(object sender, MouseEventArgs e)
+        private void LabelFilename_MouseDown(object sender, MouseEventArgs e)
         {
             string[] files = new string[] { labelFilename.Text };
             labelFilename.DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.Copy);

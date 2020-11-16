@@ -96,7 +96,7 @@ namespace Smallifier_For_Windows
             this.buttonOpenFile.TabIndex = 0;
             this.buttonOpenFile.Text = "Open...";
             this.buttonOpenFile.UseVisualStyleBackColor = true;
-            this.buttonOpenFile.Click += new System.EventHandler(this.button1_Click);
+            this.buttonOpenFile.Click += new System.EventHandler(this.Button1_Click);
             // 
             // labelFilename
             // 
@@ -107,7 +107,7 @@ namespace Smallifier_For_Windows
             this.labelFilename.Name = "labelFilename";
             this.labelFilename.Size = new System.Drawing.Size(0, 15);
             this.labelFilename.TabIndex = 2;
-            this.labelFilename.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelFilename_MouseDown);
+            this.labelFilename.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LabelFilename_MouseDown);
             // 
             // label2
             // 
@@ -396,7 +396,7 @@ namespace Smallifier_For_Windows
             this.buttonSmallify.TabIndex = 44;
             this.buttonSmallify.Text = "Smallify";
             this.buttonSmallify.UseVisualStyleBackColor = true;
-            this.buttonSmallify.Click += new System.EventHandler(this.buttonSmallify_Click);
+            this.buttonSmallify.Click += new System.EventHandler(this.ButtonSmallify_Click);
             // 
             // buttonSaveFile
             // 
@@ -407,7 +407,7 @@ namespace Smallifier_For_Windows
             this.buttonSaveFile.TabIndex = 45;
             this.buttonSaveFile.Text = "Save...";
             this.buttonSaveFile.UseVisualStyleBackColor = true;
-            this.buttonSaveFile.Click += new System.EventHandler(this.buttonSave_Click);
+            this.buttonSaveFile.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // comboBoxResolutions
             // 
@@ -444,7 +444,7 @@ namespace Smallifier_For_Windows
             this.textBoxStatusLog.ReadOnly = true;
             this.textBoxStatusLog.Size = new System.Drawing.Size(186, 176);
             this.textBoxStatusLog.TabIndex = 51;
-            this.textBoxStatusLog.VisibleChanged += new System.EventHandler(this.textBox1_VisibleChanged);
+            this.textBoxStatusLog.VisibleChanged += new System.EventHandler(this.TextBox1_VisibleChanged);
             // 
             // label3
             // 
@@ -586,8 +586,8 @@ namespace Smallifier_For_Windows
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Discord Video Smallifier";
-            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.form1_DragDrop);
-            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.form1_DragEnter);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
