@@ -72,7 +72,6 @@ namespace Smallifier_For_Windows
             textBoxOrigVertical.Text = videoStream.Height.ToString();
             textBoxOrigRatio.Text = videoStream.Ratio;
             textBoxOrigDuration.Text = videoStream.Duration.TotalSeconds.ToString();
-            //textBoxOrigDuration.Text = axWindowsMediaPlayer1.currentMedia.duration.ToString();
         }
 
         private async void Button1_Click(object sender, EventArgs e)
@@ -107,7 +106,6 @@ namespace Smallifier_For_Windows
             videoStream.SetFramerate(30.0);
 
             long bitRate = (long)(((double.Parse(textBoxTargetFilesize.Text) * 8192000.0) / axWindowsMediaPlayer1.currentMedia.duration) * 0.99);
-            //videoStream.SetBitrate(bitRate);
 
             var conversion = FFmpeg.Conversions.New();
 
@@ -150,7 +148,6 @@ namespace Smallifier_For_Windows
             string bitrateKBsec = (bitRate / 1024).ToString();
             conversion.AddParameter("-b:v " + bitrateKBsec + "k");
             conversion.AddParameter("-bufsize 8028k");
-            //conversion.AddParameter("-maxrate " + bitrateKBsec + "k");
             textBoxTargetBitrate.Text = bitrateKBsec;
             LogToConsole("Encode bitrate: " + bitrateKBsec + " KB/s");
 
@@ -190,7 +187,6 @@ namespace Smallifier_For_Windows
             var newVideoStream = newMediaInfo.VideoStreams.First();
             textBoxNewFilesize.Text = Math.Round(newMediaInfo.Size / 1048576.0, 2).ToString();
             textBoxNewDuration.Text = Math.Round(newVideoStream.Duration.TotalMilliseconds / 1000.0, 2).ToString();
-            //textBoxOrigDuration.Text = axWindowsMediaPlayer1.currentMedia.duration.ToString();
             textBoxNewBitrate.Text = Math.Round(newVideoStream.Bitrate / 1024.0).ToString();
             textBoxNewHorizontal.Text = newVideoStream.Width.ToString();
             textBoxNewVertical.Text = newVideoStream.Height.ToString();
@@ -209,20 +205,6 @@ namespace Smallifier_For_Windows
                 File.Copy(tempFilename, saveFileDialog1.FileName, true);
             }
         }
-
-        //private void buttonCopyToClipboard_Click(object sender, EventArgs e)
-        //{
-        //    if (File.Exists(tempFilename))
-        //    {
-        //        string[] files = new string[] { tempFilename };
-        //        DataObject clipboardFileData = new DataObject(DataFormats.FileDrop, files);
-        //        //string[] fileList = new string[] { tempFilename };
-        //        //StringCollection fileCollection = new StringCollection();
-        //        //fileCollection.Add(tempFilename);
-        //        //DataObject clipboardFileData = new DataObject(DataFormats.FileDrop, fileList);
-        //        Clipboard.SetDataObject(clipboardFileData, true);
-        //    }
-        //}
 
         private void TextBox1_VisibleChanged(object sender, EventArgs e)
         {
