@@ -122,8 +122,8 @@ namespace Smallifier_For_Windows
                     textBoxTargetHeight.Text = textBoxOrigVertical.Text;
                     break;
                 case 54:
-                    newWidth = decimal.Round((videoStream.Width / 2), 0, MidpointRounding.ToEven);
-                    newHeight = decimal.Round((videoStream.Height / 2), 0, MidpointRounding.ToEven);
+                    newWidth = decimal.Round(videoStream.Width / 4, MidpointRounding.AwayFromZero) * 2;
+                    newHeight = decimal.Round(videoStream.Height / 4, MidpointRounding.AwayFromZero) * 2;
                     newSize = newWidth.ToString() + "x" + newHeight.ToString();
                     conversion.AddParameter("-s " + newSize);
                     LogToConsole("Encode resolution: " + newSize);
@@ -131,8 +131,8 @@ namespace Smallifier_For_Windows
                     textBoxTargetHeight.Text = newHeight.ToString();
                     break;
                 case 55:
-                    newWidth = decimal.Round((videoStream.Width / 4), 0, MidpointRounding.ToEven);
-                    newHeight = decimal.Round((videoStream.Height / 4), 0, MidpointRounding.ToEven);
+                    newWidth = decimal.Round(videoStream.Width / 8, MidpointRounding.AwayFromZero) * 2;
+                    newHeight = decimal.Round(videoStream.Height / 8, MidpointRounding.AwayFromZero) * 2;
                     newSize = newWidth.ToString() + "x" + newHeight.ToString();
                     conversion.AddParameter("-s " + newSize);
                     LogToConsole("Encode resolution: " + newSize);
