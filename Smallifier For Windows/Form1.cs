@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Management;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -102,12 +103,38 @@ namespace Smallifier_For_Windows
             tempFilename = Path.ChangeExtension(tmp, ".mp4");
 
             var videoStream = mediaInfoOriginal.VideoStreams.First();
-            videoStream.SetCodec(VideoCodec.h264);
-            videoStream.SetFramerate(30.0);
-
-            long bitRate = (long)(((double.Parse(textBoxTargetFilesize.Text) * 8192000.0) / axWindowsMediaPlayer1.currentMedia.duration) * 0.99);
-
             var conversion = FFmpeg.Conversions.New();
+
+            // basic check for Nvidia GPU
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
+                {
+                    foreach (ManagementObject obj in searcher.Get())
+                    {
+                        if (obj["VideoProcessor"].ToString().ToLower().Contains("geforce"))
+                        {
+                            LogToConsole("Using Nvidia GPU.");
+                            videoStream.SetCodec(VideoCodec.h264_nvenc);
+                            conversion.SetPreset(ConversionPreset.Slow);
+                        } else
+                        {
+                            videoStream.SetCodec(VideoCodec.h264);
+                            conversion.SetPreset(ConversionPreset.VerySlow);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogToConsole("Exception: " + e.GetType().ToString());
+                LogToConsole("Message: " + e.Message);
+                videoStream.SetCodec(VideoCodec.h264);
+                conversion.SetPreset(ConversionPreset.VerySlow);
+            }
+
+            videoStream.SetFramerate(30.0);
+            long bitRate = (long)(((double.Parse(textBoxTargetFilesize.Text) * 8192000.0) / axWindowsMediaPlayer1.currentMedia.duration) * 0.99);
 
             Decimal newWidth;
             Decimal newHeight;
@@ -153,7 +180,6 @@ namespace Smallifier_For_Windows
 
             conversion.AddStream(videoStream);
             conversion.SetOutput(tempFilename).SetOverwriteOutput(true);
-            conversion.SetPreset(ConversionPreset.VerySlow);
             conversion.OnProgress += (s, args) =>
             {
                 progress.Report(args.Percent);
