@@ -106,21 +106,16 @@ namespace Smallifier_For_Windows
             var conversion = FFmpeg.Conversions.New();
 
             // basic check for Nvidia GPU
+            var nvidia = false;
             try
             {
                 using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
                 {
                     foreach (ManagementObject obj in searcher.Get())
                     {
-                        if (obj["VideoProcessor"].ToString().ToLower().Contains("geforce"))
+                        if (obj["VideoProcessor"].ToString().ToLower().Contains("geforce")) // If *any* GeForce card is detected, assume ffmpeg can use it.
                         {
-                            LogToConsole("Using Nvidia GPU.");
-                            videoStream.SetCodec(VideoCodec.h264_nvenc);
-                            conversion.SetPreset(ConversionPreset.Slow);
-                        } else
-                        {
-                            videoStream.SetCodec(VideoCodec.h264);
-                            conversion.SetPreset(ConversionPreset.VerySlow);
+                            nvidia = true;
                         }
                     }
                 }
@@ -129,8 +124,20 @@ namespace Smallifier_For_Windows
             {
                 LogToConsole("Exception: " + e.GetType().ToString());
                 LogToConsole("Message: " + e.Message);
-                videoStream.SetCodec(VideoCodec.h264);
-                conversion.SetPreset(ConversionPreset.VerySlow);
+            } 
+            finally 
+            { 
+                if (nvidia)
+                {
+                    videoStream.SetCodec(VideoCodec.h264_nvenc);
+                    conversion.SetPreset(ConversionPreset.Slow);
+                    LogToConsole("Using Nvidia GPU.");
+                }
+                else
+                {
+                    videoStream.SetCodec(VideoCodec.h264);
+                    conversion.SetPreset(ConversionPreset.VerySlow);
+                }
             }
 
             videoStream.SetFramerate(30.0);
