@@ -17,10 +17,13 @@ namespace Smallifier_For_Windows
         private static string origFilename;
         private static string tempFilename;
         private static IMediaInfo mediaInfoOriginal;
+        private static bool nvidia;
 
         public Form1()
         {
             InitializeComponent();
+            labelFilename.Text = "";
+            labelFilename.Visible = true;
             Dictionary<string, int> vidSizeDict = new Dictionary<string, int>();
             foreach (int enumValue in Enum.GetValues(typeof(VideoSize)))
             {
@@ -33,6 +36,33 @@ namespace Smallifier_For_Windows
             comboBoxResolutions.ValueMember = "Value";
             comboBoxResolutions.DataSource = new BindingSource(vidSizeDict, null);
             comboBoxResolutions.SelectedIndex = 54;
+
+            // If *any* GeForce card is detected, just assuming CUDA support and that ffmpeg can use it.
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
+                {
+                    foreach (ManagementObject obj in searcher.Get())
+                    {
+                        if (obj["VideoProcessor"].ToString().ToLower().Contains("geforce")) 
+                        {
+                            nvidia = true;
+                            checkBoxGPU.Checked = true;
+                        } 
+                        else
+                        {
+                            nvidia = false;
+                            checkBoxGPU.Enabled = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogToConsole("Exception: " + e.GetType().ToString());
+                LogToConsole("Message: " + e.Message);
+            }
+
             CheckFFmpeg();
         }
 
@@ -105,39 +135,16 @@ namespace Smallifier_For_Windows
             var videoStream = mediaInfoOriginal.VideoStreams.First();
             var conversion = FFmpeg.Conversions.New();
 
-            // basic check for Nvidia GPU
-            var nvidia = false;
-            try
+            if (nvidia)
             {
-                using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
-                {
-                    foreach (ManagementObject obj in searcher.Get())
-                    {
-                        if (obj["VideoProcessor"].ToString().ToLower().Contains("geforce")) // If *any* GeForce card is detected, assume ffmpeg can use it.
-                        {
-                            nvidia = true;
-                        }
-                    }
-                }
+                videoStream.SetCodec(VideoCodec.h264_nvenc);
+                conversion.SetPreset(ConversionPreset.Slow);
+                LogToConsole("Using Nvidia GPU.");
             }
-            catch (Exception e)
+            else
             {
-                LogToConsole("Exception: " + e.GetType().ToString());
-                LogToConsole("Message: " + e.Message);
-            } 
-            finally 
-            { 
-                if (nvidia)
-                {
-                    videoStream.SetCodec(VideoCodec.h264_nvenc);
-                    conversion.SetPreset(ConversionPreset.Slow);
-                    LogToConsole("Using Nvidia GPU.");
-                }
-                else
-                {
-                    videoStream.SetCodec(VideoCodec.h264);
-                    conversion.SetPreset(ConversionPreset.VerySlow);
-                }
+                videoStream.SetCodec(VideoCodec.h264);
+                conversion.SetPreset(ConversionPreset.VerySlow);
             }
 
             videoStream.SetFramerate(30.0);
@@ -152,8 +159,6 @@ namespace Smallifier_For_Windows
                     newSize = videoStream.Width.ToString() + "x" + videoStream.Height.ToString();
                     conversion.AddParameter("-s " + newSize);
                     LogToConsole("Encode resolution: " + newSize);
-                    textBoxTargetWidth.Text = textBoxOrigHorizontal.Text;
-                    textBoxTargetHeight.Text = textBoxOrigVertical.Text;
                     break;
                 case 54:
                     newWidth = decimal.Round(videoStream.Width / 4, MidpointRounding.AwayFromZero) * 2;
@@ -161,8 +166,6 @@ namespace Smallifier_For_Windows
                     newSize = newWidth.ToString() + "x" + newHeight.ToString();
                     conversion.AddParameter("-s " + newSize);
                     LogToConsole("Encode resolution: " + newSize);
-                    textBoxTargetWidth.Text = newWidth.ToString();
-                    textBoxTargetHeight.Text = newHeight.ToString();
                     break;
                 case 55:
                     newWidth = decimal.Round(videoStream.Width / 8, MidpointRounding.AwayFromZero) * 2;
@@ -170,8 +173,6 @@ namespace Smallifier_For_Windows
                     newSize = newWidth.ToString() + "x" + newHeight.ToString();
                     conversion.AddParameter("-s " + newSize);
                     LogToConsole("Encode resolution: " + newSize);
-                    textBoxTargetWidth.Text = newWidth.ToString();
-                    textBoxTargetHeight.Text = newHeight.ToString();
                     break;
                 default:
                     videoStream.SetSize((VideoSize)comboBoxResolutions.SelectedIndex);
@@ -182,7 +183,6 @@ namespace Smallifier_For_Windows
             string bitrateKBsec = (bitRate / 1024).ToString();
             conversion.AddParameter("-b:v " + bitrateKBsec + "k");
             conversion.AddParameter("-bufsize 8028k");
-            textBoxTargetBitrate.Text = bitrateKBsec;
             LogToConsole("Encode bitrate: " + bitrateKBsec + " KB/s");
 
             conversion.AddStream(videoStream);
@@ -252,6 +252,11 @@ namespace Smallifier_For_Windows
         {
             string[] files = new string[] { labelFilename.Text };
             labelFilename.DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.Copy);
+        }
+
+        private void checkBoxGPU_CheckedChanged(object sender, EventArgs e)
+        {
+            nvidia = checkBoxGPU.Checked;
         }
     }
 }
