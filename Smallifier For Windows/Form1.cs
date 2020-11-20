@@ -18,7 +18,7 @@ namespace Smallifier_For_Windows
         private static string tempFilename;
         private static IMediaInfo mediaInfoOriginal;
         private static bool nvidia;
-        private static double timeMultiple = 1.0;
+        private static double timeMultiple;
 
         public Form1()
         {
@@ -137,13 +137,6 @@ namespace Smallifier_For_Windows
             var videoStream = mediaInfoOriginal.VideoStreams.First();
             var conversion = FFmpeg.Conversions.New();
 
-            if (textBoxSetDuration.Text.CompareTo(textBoxOrigDuration.Text) != 0)
-            {
-                double newTime = (double)int.Parse(textBoxSetDuration.Text);
-                double newTimePercent = (newTime / axWindowsMediaPlayer1.currentMedia.duration);
-                timeMultiple = Math.Round(newTimePercent,2);
-            }
-
             if (nvidia)
             {
                 videoStream.SetCodec(VideoCodec.h264_nvenc);
@@ -189,8 +182,11 @@ namespace Smallifier_For_Windows
                     break;
             }
 
-            LogToConsole("Multiplying time by " + timeMultiple.ToString());
-            conversion.AddParameter("-filter:v \"setpts=" + timeMultiple + "*PTS\"");
+            if (timeMultiple != 1.0)
+            {
+                LogToConsole("Reducing duration to " + (timeMultiple * 100.0).ToString() + "%");
+                conversion.AddParameter("-filter:v \"setpts=" + timeMultiple + "*PTS\"");
+            }
             string bitrateKBsec = (bitRate / 1024).ToString();
             conversion.AddParameter("-b:v " + bitrateKBsec + "k");
             conversion.AddParameter("-bufsize 8028k");
@@ -218,6 +214,17 @@ namespace Smallifier_For_Windows
             textBoxNewHorizontal.Clear();
             textBoxNewVertical.Clear();
             textBoxNewRatio.Clear();
+
+            if (textBoxSetDuration.Text.CompareTo(textBoxOrigDuration.Text) != 0)
+            {
+                double newTime = (double)int.Parse(textBoxSetDuration.Text);
+                double newTimePercent = (newTime / axWindowsMediaPlayer1.currentMedia.duration);
+                timeMultiple = Math.Round(newTimePercent, 2);
+            } 
+            else
+            {
+                timeMultiple = 1.0;
+            }
 
             int uploads = await ConversionTask(new Progress<int>(percent => progressBar1.Value = percent));
             progressBar1.Value = 0;
