@@ -18,6 +18,7 @@ namespace Smallifier_For_Windows
         private static string tempFilename;
         private static IMediaInfo mediaInfoOriginal;
         private static bool nvidia;
+        private static double timeMultiple = 1.0;
 
         public Form1()
         {
@@ -103,6 +104,7 @@ namespace Smallifier_For_Windows
             textBoxOrigVertical.Text = videoStream.Height.ToString();
             textBoxOrigRatio.Text = videoStream.Ratio;
             textBoxOrigDuration.Text = videoStream.Duration.TotalSeconds.ToString();
+            textBoxSetDuration.Text = videoStream.Duration.TotalSeconds.ToString();
         }
 
         private async void Button1_Click(object sender, EventArgs e)
@@ -135,6 +137,13 @@ namespace Smallifier_For_Windows
             var videoStream = mediaInfoOriginal.VideoStreams.First();
             var conversion = FFmpeg.Conversions.New();
 
+            if (textBoxSetDuration.Text.CompareTo(textBoxOrigDuration.Text) != 0)
+            {
+                double newTime = (double)int.Parse(textBoxSetDuration.Text);
+                double newTimePercent = (newTime / axWindowsMediaPlayer1.currentMedia.duration);
+                timeMultiple = Math.Round(newTimePercent,2);
+            }
+
             if (nvidia)
             {
                 videoStream.SetCodec(VideoCodec.h264_nvenc);
@@ -148,7 +157,7 @@ namespace Smallifier_For_Windows
             }
 
             videoStream.SetFramerate(30.0);
-            long bitRate = (long)(((double.Parse(textBoxTargetFilesize.Text) * 8192000.0) / axWindowsMediaPlayer1.currentMedia.duration) * 0.99);
+            long bitRate = (long)(((double.Parse(textBoxTargetFilesize.Text) * 8192000.0) / (axWindowsMediaPlayer1.currentMedia.duration * timeMultiple)) * 0.99);
 
             Decimal newWidth;
             Decimal newHeight;
@@ -180,6 +189,8 @@ namespace Smallifier_For_Windows
                     break;
             }
 
+            LogToConsole("Multiplying time by " + timeMultiple.ToString());
+            conversion.AddParameter("-filter:v \"setpts=" + timeMultiple + "*PTS\"");
             string bitrateKBsec = (bitRate / 1024).ToString();
             conversion.AddParameter("-b:v " + bitrateKBsec + "k");
             conversion.AddParameter("-bufsize 8028k");

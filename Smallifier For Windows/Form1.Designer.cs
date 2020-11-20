@@ -60,13 +60,15 @@ namespace Smallifier_For_Windows
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.comboBoxResolutions = new System.Windows.Forms.ComboBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
             this.textBoxStatusLog = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.checkBoxGPU = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.labelFilename = new System.Windows.Forms.Label();
+            this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
+            this.textBoxSetDuration = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -102,7 +104,7 @@ namespace Smallifier_For_Windows
             this.textBoxTargetFilesize.Location = new System.Drawing.Point(88, 550);
             this.textBoxTargetFilesize.Name = "textBoxTargetFilesize";
             this.textBoxTargetFilesize.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.textBoxTargetFilesize.Size = new System.Drawing.Size(23, 20);
+            this.textBoxTargetFilesize.Size = new System.Drawing.Size(35, 20);
             this.textBoxTargetFilesize.TabIndex = 5;
             this.textBoxTargetFilesize.Text = "8";
             // 
@@ -342,15 +344,6 @@ namespace Smallifier_For_Windows
             this.progressBar1.Size = new System.Drawing.Size(646, 10);
             this.progressBar1.TabIndex = 49;
             // 
-            // axWindowsMediaPlayer1
-            // 
-            this.axWindowsMediaPlayer1.Enabled = true;
-            this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(12, 12);
-            this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
-            this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(640, 425);
-            this.axWindowsMediaPlayer1.TabIndex = 36;
-            // 
             // textBoxStatusLog
             // 
             this.textBoxStatusLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -369,7 +362,7 @@ namespace Smallifier_For_Windows
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(16, 574);
+            this.label3.Location = new System.Drawing.Point(16, 575);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(66, 15);
             this.label3.TabIndex = 48;
@@ -420,12 +413,41 @@ namespace Smallifier_For_Windows
             this.labelFilename.Visible = false;
             this.labelFilename.MouseDown += new System.Windows.Forms.MouseEventHandler(this.LabelFilename_MouseDown);
             // 
+            // axWindowsMediaPlayer1
+            // 
+            this.axWindowsMediaPlayer1.Enabled = true;
+            this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(12, 12);
+            this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
+            this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
+            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(640, 425);
+            this.axWindowsMediaPlayer1.TabIndex = 36;
+            // 
+            // textBoxSetDuration
+            // 
+            this.textBoxSetDuration.Location = new System.Drawing.Point(88, 601);
+            this.textBoxSetDuration.Name = "textBoxSetDuration";
+            this.textBoxSetDuration.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.textBoxSetDuration.Size = new System.Drawing.Size(35, 20);
+            this.textBoxSetDuration.TabIndex = 66;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(11, 602);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(71, 15);
+            this.label4.TabIndex = 67;
+            this.label4.Text = "Duration (s)";
+            // 
             // Form1
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(663, 662);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.textBoxSetDuration);
             this.Controls.Add(this.labelFilename);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.checkBoxGPU);
@@ -511,6 +533,8 @@ namespace Smallifier_For_Windows
         private System.Windows.Forms.CheckBox checkBoxGPU;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label labelFilename;
+        private System.Windows.Forms.TextBox textBoxSetDuration;
+        private System.Windows.Forms.Label label4;
     }
 }
 
